@@ -1,0 +1,490 @@
+/* ================================
+   LIFEOS SETTINGS — INSTAGRAM STYLE
+================================ */
+
+.settings-v2 {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 35px 45px 60px;
+  background: #fff;
+  min-height: calc(100vh - 64px);
+}
+
+/* PROFILE HEADER */
+
+.settings-profile {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 10px 0 35px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.settings-avatar {
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #8b52e5, #cf684f);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.settings-profile-info h1 {
+  margin: 0 0 5px;
+  font-size: 25px;
+  font-weight: 600;
+  color: #202124;
+}
+
+.settings-profile-info p {
+  margin: 0 0 12px;
+  color: #777;
+  font-size: 14px;
+}
+
+.settings-profile-info a {
+  display: inline-block;
+  text-decoration: none;
+  background: #efefef;
+  color: #222;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* MAIN LAYOUT */
+
+.settings-instagram-layout {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 45px;
+  margin-top: 30px;
+}
+
+/* LEFT MENU */
+
+.settings-menu {
+  position: sticky;
+  top: 85px;
+  height: max-content;
+}
+
+.settings-menu-title {
+  padding: 0 14px 16px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #222;
+}
+
+.settings-menu-item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 14px;
+  margin-bottom: 4px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #444;
+  text-decoration: none;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.settings-menu-item svg:last-child {
+  margin-left: auto;
+}
+
+.settings-menu-item:hover {
+  background: #f5f5f5;
+}
+
+.settings-menu-item.active {
+  background: #f1ebff;
+  color: #6f45dc;
+  font-weight: 600;
+}
+
+.settings-menu-item.logout {
+  color: #d14f4f;
+}
+
+.settings-menu-divider {
+  height: 1px;
+  background: #e9e9e9;
+  margin: 18px 10px;
+}
+
+/* CONTENT */
+
+.settings-content {
+  min-width: 0;
+}
+
+.settings-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.settings-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.settings-card-heading h2 {
+  margin: 0 0 5px;
+  font-size: 17px;
+  color: #222;
+}
+
+.settings-card-heading p {
+  margin: 0;
+  color: #777;
+  font-size: 12px;
+}
+
+.settings-card-heading > svg {
+  color: #7b4ce2;
+}
+
+/* PROFILE FORM */
+
+.settings-profile-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 22px 24px;
+}
+
+.settings-profile-form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.settings-profile-form input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 7px;
+  padding: 11px 12px;
+  border: 1px solid #ddd;
+  border-radius: 7px;
+  outline: none;
+  font-size: 13px;
+  background: #fafafa;
+}
+
+.settings-profile-form input:focus {
+  border-color: #9b78e8;
+  background: #fff;
+}
+
+.settings-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 24px 20px;
+  color: #6f45dc;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* APPEARANCE */
+
+.settings-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.settings-option-row:last-child {
+  border-bottom: 0;
+}
+
+.settings-option-row strong {
+  display: block;
+  font-size: 13px;
+  color: #333;
+}
+
+.settings-option-row small {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+  font-size: 11px;
+}
+
+.settings-choice {
+  display: flex;
+  gap: 5px;
+  background: #f4f4f4;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.settings-choice button {
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #666;
+}
+
+.settings-choice button.selected {
+  background: #fff;
+  color: #6f45dc;
+  box-shadow: 0 1px 4px #00000012;
+  font-weight: 600;
+}
+
+/* NOTIFICATIONS */
+
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 24px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.settings-toggle-row:last-child {
+  border-bottom: 0;
+}
+
+.settings-toggle-row strong {
+  display: block;
+  font-size: 13px;
+  color: #333;
+}
+
+.settings-toggle-row small {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+  font-size: 10px;
+}
+
+/* SWITCH */
+
+.settings-switch {
+  width: 40px;
+  height: 22px;
+  padding: 2px;
+  border: 0;
+  border-radius: 50px;
+  background: #d5d5d5;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.settings-switch i {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: 0.2s ease;
+}
+
+.settings-switch.on {
+  background: #7650df;
+}
+
+.settings-switch.on i {
+  transform: translateX(18px);
+}
+
+/* AI */
+
+.settings-focus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 20px 24px;
+}
+
+.settings-focus-tags button {
+  border: 1px solid #ded4f4;
+  background: #faf8ff;
+  color: #7049d3;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.settings-focus-tags button:hover {
+  background: #f1ebff;
+}
+
+/* PRIVACY */
+
+.privacy-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+}
+
+.privacy-box strong {
+  display: block;
+  font-size: 13px;
+  color: #333;
+}
+
+.privacy-box small {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+  font-size: 11px;
+}
+
+.danger {
+  border: 1px solid #efc6c0;
+  background: #fff6f4;
+  color: #c65343;
+  border-radius: 7px;
+  padding: 8px 13px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.danger:hover {
+  background: #ffeae6;
+}
+
+/* SAVE */
+
+.settings-bottom {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 5px 0 20px;
+}
+
+.settings-save {
+  border: 0;
+  border-radius: 8px;
+  background: #6f45dc;
+  color: #fff;
+  padding: 11px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settings-save:hover {
+  background: #5f38ca;
+}
+
+.settings-notice {
+  margin: 0;
+  color: #269a70;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+  .settings-v2 {
+    padding: 25px 18px 45px;
+  }
+
+  .settings-instagram-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .settings-menu {
+    position: static;
+  }
+
+  .settings-menu-item {
+    display: inline-flex;
+    width: auto;
+    margin-right: 4px;
+  }
+
+  .settings-menu-item svg:last-child {
+    display: none;
+  }
+
+  .settings-menu-title {
+    display: none;
+  }
+
+  .settings-menu-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .settings-profile {
+    gap: 18px;
+  }
+
+  .settings-avatar {
+    width: 75px;
+    height: 75px;
+    min-width: 75px;
+    font-size: 27px;
+  }
+
+  .settings-profile-info h1 {
+    font-size: 20px;
+  }
+
+  .settings-profile-info p {
+    font-size: 12px;
+  }
+
+  .settings-profile-form {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-option-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settings-choice {
+    width: 100%;
+  }
+
+  .settings-choice button {
+    flex: 1;
+  }
+
+  .settings-bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .settings-save {
+    width: 100%;
+  }
+}

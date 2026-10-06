@@ -1,0 +1,2 @@
+import { StrictMode } from 'react'; import { createRoot } from 'react-dom/client'; import App from './App'; import './styles/index.css'; import './styles/foundation.css'; import './styles/reference-pages.css'; import './styles/app-pages.css'; import './styles/focus-workspaces.css'; import './styles/reports-tasks.css'; import './styles/interactions.css'; import './styles/settings-v2.css'; import './styles/topbar-interactions.css';
+createRoot(document.getElementById('root')).render(<StrictMode><App/></StrictMode>);
