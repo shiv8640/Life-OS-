@@ -3,11 +3,7 @@ import HabitLog from "../models/HabitLog.js";
 
 export const createHabit = async (req, res) => {
   try {
-    const {
-      name,
-      frequency,
-      target,
-    } = req.body;
+    const { name, frequency, target } = req.body;
 
     if (!name) {
       return res.status(400).json({
@@ -17,7 +13,7 @@ export const createHabit = async (req, res) => {
     }
 
     const habit = await Habit.create({
-      userId: req.user._id,
+      userId: req.user.id,
       name,
       frequency,
       target,
@@ -39,9 +35,12 @@ export const createHabit = async (req, res) => {
 
 export const getHabits = async (req, res) => {
   try {
-    const habits = await Habit.find({
-      userId: req.user._id,
-    }).sort({ createdAt: -1 });
+    const habits = await Habit.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      order: [["createdAt", "DESC"]],
+    });
 
     res.json({
       success: true,
@@ -52,23 +51,19 @@ export const getHabits = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch habits",
+      error: error.message,
     });
   }
 };
 
 export const updateHabit = async (req, res) => {
   try {
-    const habit = await Habit.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        userId: req.user._id,
+    const habit = await Habit.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
       },
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    });
 
     if (!habit) {
       return res.status(404).json({
@@ -76,6 +71,8 @@ export const updateHabit = async (req, res) => {
         message: "Habit not found",
       });
     }
+
+    await habit.update(req.body);
 
     res.json({
       success: true,
@@ -86,15 +83,18 @@ export const updateHabit = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update habit",
+      error: error.message,
     });
   }
 };
 
 export const deleteHabit = async (req, res) => {
   try {
-    const habit = await Habit.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user._id,
+    const habit = await Habit.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
+      },
     });
 
     if (!habit) {
@@ -104,10 +104,16 @@ export const deleteHabit = async (req, res) => {
       });
     }
 
-    await HabitLog.deleteMany({
-      habitId: habit._id,
-      userId: req.user._id,
+    // Delete related habit logs
+    await HabitLog.destroy({
+      where: {
+        habitId: habit.id,
+        userId: req.user.id,
+      },
     });
+
+    // Delete habit
+    await habit.destroy();
 
     res.json({
       success: true,
@@ -117,6 +123,7 @@ export const deleteHabit = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to delete habit",
+      error: error.message,
     });
   }
 };
@@ -125,9 +132,19 @@ export const logHabit = async (req, res) => {
   try {
     const { date, completed } = req.body;
 
+    if (!date) {
+      return res.status(400).json({
+        success: false,
+        message: "Date is required",
+      });
+    }
+
+    // Check habit belongs to current user
     const habit = await Habit.findOne({
-      _id: req.params.id,
-      userId: req.user._id,
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
+      },
     });
 
     if (!habit) {
@@ -137,20 +154,29 @@ export const logHabit = async (req, res) => {
       });
     }
 
-    const log = await HabitLog.findOneAndUpdate(
-      {
-        habitId: habit._id,
-        userId: req.user._id,
-        date: new Date(date),
+    // Check if log already exists
+    let log = await HabitLog.findOne({
+      where: {
+        habitId: habit.id,
+        userId: req.user.id,
+        date,
       },
-      {
+    });
+
+    if (log) {
+      // Update existing log
+      await log.update({
         completed,
-      },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
+      });
+    } else {
+      // Create new log
+      log = await HabitLog.create({
+        habitId: habit.id,
+        userId: req.user.id,
+        date,
+        completed,
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -169,8 +195,10 @@ export const logHabit = async (req, res) => {
 export const getHabitLogs = async (req, res) => {
   try {
     const habit = await Habit.findOne({
-      _id: req.params.id,
-      userId: req.user._id,
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
+      },
     });
 
     if (!habit) {
@@ -180,10 +208,13 @@ export const getHabitLogs = async (req, res) => {
       });
     }
 
-    const logs = await HabitLog.find({
-      habitId: habit._id,
-      userId: req.user._id,
-    }).sort({ date: -1 });
+    const logs = await HabitLog.findAll({
+      where: {
+        habitId: habit.id,
+        userId: req.user.id,
+      },
+      order: [["date", "DESC"]],
+    });
 
     res.json({
       success: true,
@@ -193,6 +224,7 @@ export const getHabitLogs = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch habit logs",
+      error: error.message,
     });
   }
 };

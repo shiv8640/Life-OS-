@@ -18,7 +18,7 @@ export const createGoal = async (req, res) => {
     }
 
     const goal = await Goal.create({
-      userId: req.user._id,
+      userId: req.user.id,
       title,
       description,
       targetDate,
@@ -42,9 +42,12 @@ export const createGoal = async (req, res) => {
 
 export const getGoals = async (req, res) => {
   try {
-    const goals = await Goal.find({
-      userId: req.user._id,
-    }).sort({ targetDate: 1 });
+    const goals = await Goal.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      order: [["targetDate", "ASC"]],
+    });
 
     res.json({
       success: true,
@@ -55,23 +58,19 @@ export const getGoals = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch goals",
+      error: error.message,
     });
   }
 };
 
 export const updateGoal = async (req, res) => {
   try {
-    const goal = await Goal.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        userId: req.user._id,
+    const goal = await Goal.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
       },
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    });
 
     if (!goal) {
       return res.status(404).json({
@@ -79,6 +78,8 @@ export const updateGoal = async (req, res) => {
         message: "Goal not found",
       });
     }
+
+    await goal.update(req.body);
 
     res.json({
       success: true,
@@ -89,15 +90,18 @@ export const updateGoal = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update goal",
+      error: error.message,
     });
   }
 };
 
 export const deleteGoal = async (req, res) => {
   try {
-    const goal = await Goal.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user._id,
+    const goal = await Goal.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
+      },
     });
 
     if (!goal) {
@@ -107,6 +111,8 @@ export const deleteGoal = async (req, res) => {
       });
     }
 
+    await goal.destroy();
+
     res.json({
       success: true,
       message: "Goal deleted successfully",
@@ -115,6 +121,7 @@ export const deleteGoal = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to delete goal",
+      error: error.message,
     });
   }
 };
@@ -144,19 +151,12 @@ export const updateGoalProgress = async (req, res) => {
       status = "completed";
     }
 
-    const goal = await Goal.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        userId: req.user._id,
+    const goal = await Goal.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user.id,
       },
-      {
-        progress,
-        status,
-      },
-      {
-        new: true,
-      }
-    );
+    });
 
     if (!goal) {
       return res.status(404).json({
@@ -164,6 +164,11 @@ export const updateGoalProgress = async (req, res) => {
         message: "Goal not found",
       });
     }
+
+    await goal.update({
+      progress,
+      status,
+    });
 
     res.json({
       success: true,
@@ -174,6 +179,7 @@ export const updateGoalProgress = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update goal progress",
+      error: error.message,
     });
   }
 };

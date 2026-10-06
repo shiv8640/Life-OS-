@@ -1,49 +1,66 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const goalSchema = new mongoose.Schema(
+const Goal = sequelize.define(
+  "Goal",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
     },
 
     title: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING(200),
+      allowNull: false,
     },
 
     description: {
-      type: String,
-      default: "",
+      type: DataTypes.TEXT,
+      defaultValue: "",
     },
 
     targetDate: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      field: "target_date",
     },
 
     progress: {
-      type: Number,
-      min: 0,
-      max: 100,
-      default: 0,
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      validate: {
+        min: 0,
+        max: 100,
+      },
     },
 
     status: {
-      type: String,
-      enum: ["not-started", "in-progress", "completed"],
-      default: "not-started",
+      type: DataTypes.ENUM(
+        "not-started",
+        "in-progress",
+        "completed"
+      ),
+      defaultValue: "not-started",
     },
   },
   {
+    tableName: "goals",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    indexes: [
+      {
+        fields: ["user_id", "target_date"],
+      },
+    ],
   }
 );
-
-goalSchema.index({ userId: 1, targetDate: 1 });
-
-const Goal = mongoose.model("Goal", goalSchema);
 
 export default Goal;

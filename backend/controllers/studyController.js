@@ -1,4 +1,5 @@
 import Study from "../models/Study.js";
+import { Op } from "sequelize";
 
 export const addStudy = async (req, res) => {
   try {
@@ -18,7 +19,7 @@ export const addStudy = async (req, res) => {
     }
 
     const study = await Study.create({
-      userId: req.user._id,
+      userId: req.user.id,
       subject,
       date,
       studyHours,
@@ -42,9 +43,12 @@ export const addStudy = async (req, res) => {
 
 export const getStudy = async (req, res) => {
   try {
-    const study = await Study.find({
-      userId: req.user._id,
-    }).sort({ date: -1 });
+    const study = await Study.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      order: [["date", "DESC"]],
+    });
 
     res.json({
       success: true,
@@ -55,6 +59,7 @@ export const getStudy = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch study data",
+      error: error.message,
     });
   }
 };
@@ -65,18 +70,22 @@ export const getWeeklyStudy = async (req, res) => {
 
     const weekAgo = new Date();
     weekAgo.setDate(today.getDate() - 6);
-    weekAgo.setHours(0, 0, 0, 0);
 
-    const study = await Study.find({
-      userId: req.user._id,
-      date: {
-        $gte: weekAgo,
-        $lte: today,
+    const todayString = today.toISOString().split("T")[0];
+    const weekAgoString = weekAgo.toISOString().split("T")[0];
+
+    const study = await Study.findAll({
+      where: {
+        userId: req.user.id,
+        date: {
+          [Op.between]: [weekAgoString, todayString],
+        },
       },
-    }).sort({ date: 1 });
+      order: [["date", "ASC"]],
+    });
 
     const totalHours = study.reduce(
-      (total, item) => total + item.studyHours,
+      (total, item) => total + Number(item.studyHours || 0),
       0
     );
 
@@ -89,35 +98,50 @@ export const getWeeklyStudy = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch weekly study data",
+      error: error.message,
     });
   }
 };
 
 export const getSubjects = async (req, res) => {
   try {
-    const subjects = await Study.aggregate([
-      {
-        $match: {
-          userId: req.user._id,
-        },
+    const study = await Study.findAll({
+      where: {
+        userId: req.user.id,
       },
-      {
-        $group: {
-          _id: "$subject",
-          totalHours: {
-            $sum: "$studyHours",
-          },
-          averageProgress: {
-            $avg: "$progress",
-          },
-        },
-      },
-      {
-        $sort: {
-          totalHours: -1,
-        },
-      },
-    ]);
+      order: [["date", "DESC"]],
+    });
+
+    // Group subject-wise in JavaScript
+    const subjectMap = {};
+
+    study.forEach((item) => {
+      const subject = item.subject;
+
+      if (!subjectMap[subject]) {
+        subjectMap[subject] = {
+          _id: subject,
+          totalHours: 0,
+          totalProgress: 0,
+          count: 0,
+        };
+      }
+
+      subjectMap[subject].totalHours += Number(item.studyHours || 0);
+      subjectMap[subject].totalProgress += Number(item.progress || 0);
+      subjectMap[subject].count += 1;
+    });
+
+    const subjects = Object.values(subjectMap)
+      .map((item) => ({
+        _id: item._id,
+        totalHours: item.totalHours,
+        averageProgress:
+          item.count > 0
+            ? item.totalProgress / item.count
+            : 0,
+      }))
+      .sort((a, b) => b.totalHours - a.totalHours);
 
     res.json({
       success: true,
@@ -127,6 +151,7 @@ export const getSubjects = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch subject statistics",
+      error: error.message,
     });
   }
 };

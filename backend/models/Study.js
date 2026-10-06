@@ -1,50 +1,66 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const studySchema = new mongoose.Schema(
+const Study = sequelize.define(
+  "Study",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
     },
 
     subject: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING(100),
+      allowNull: false,
     },
 
     date: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATEONLY,
+      allowNull: false,
     },
 
     studyHours: {
-      type: Number,
-      required: true,
-      min: 0,
+      type: DataTypes.DECIMAL(5, 2),
+      allowNull: false,
+      field: "study_hours",
     },
 
     progress: {
-      type: Number,
-      min: 0,
-      max: 100,
-      default: 0,
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      validate: {
+        min: 0,
+        max: 100,
+      },
     },
 
     focusScore: {
-      type: Number,
-      min: 1,
-      max: 10,
+      type: DataTypes.INTEGER,
+      field: "focus_score",
+      validate: {
+        min: 1,
+        max: 10,
+      },
     },
   },
   {
+    tableName: "study",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false,
+    indexes: [
+      {
+        fields: ["user_id", "date"],
+      },
+    ],
   }
 );
-
-studySchema.index({ userId: 1, date: 1 });
-
-const Study = mongoose.model("Study", studySchema);
 
 export default Study;

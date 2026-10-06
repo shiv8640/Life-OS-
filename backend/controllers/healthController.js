@@ -11,7 +11,7 @@ export const addHealth = async (req, res) => {
     } = req.body;
 
     const health = await Health.create({
-      userId: req.user._id,
+      userId: req.user.id,
       date,
       sleepHours,
       waterIntake,
@@ -35,9 +35,12 @@ export const addHealth = async (req, res) => {
 
 export const getHealth = async (req, res) => {
   try {
-    const health = await Health.find({
-      userId: req.user._id,
-    }).sort({ date: -1 });
+    const health = await Health.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      order: [["date", "DESC"]],
+    });
 
     res.json({
       success: true,
@@ -48,22 +51,19 @@ export const getHealth = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch health data",
+      error: error.message,
     });
   }
 };
 
 export const getHealthByDate = async (req, res) => {
   try {
-    const start = new Date(req.params.date);
-
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
+    const { date } = req.params;
 
     const health = await Health.findOne({
-      userId: req.user._id,
-      date: {
-        $gte: start,
-        $lt: end,
+      where: {
+        userId: req.user.id,
+        date,
       },
     });
 
@@ -82,6 +82,7 @@ export const getHealthByDate = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch health data",
+      error: error.message,
     });
   }
 };

@@ -2,7 +2,7 @@ import getAnalytics from "../services/analyticsService.js";
 
 export const getUserAnalytics = async (req, res) => {
   try {
-    const analytics = await getAnalytics(req.user._id);
+    const analytics = await getAnalytics(req.user.id);
 
     res.json({
       success: true,

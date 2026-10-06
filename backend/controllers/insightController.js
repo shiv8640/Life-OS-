@@ -4,14 +4,14 @@ import AIInsight from "../models/AIInsight.js";
 
 export const generateUserInsights = async (req, res) => {
   try {
-    const analytics = await getAnalytics(req.user._id);
+    const analytics = await getAnalytics(req.user.id);
 
     const insights = await generateInsights(analytics);
 
     const savedInsights = await Promise.all(
       insights.map((insight) =>
         AIInsight.create({
-          userId: req.user._id,
+          userId: req.user.id,
           ...insight,
         })
       )
@@ -33,9 +33,12 @@ export const generateUserInsights = async (req, res) => {
 
 export const getUserInsights = async (req, res) => {
   try {
-    const insights = await AIInsight.find({
-      userId: req.user._id,
-    }).sort({ createdAt: -1 });
+    const insights = await AIInsight.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      order: [["created_at", "DESC"]],
+    });
 
     res.json({
       success: true,
@@ -46,6 +49,7 @@ export const getUserInsights = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch insights",
+      error: error.message,
     });
   }
 };

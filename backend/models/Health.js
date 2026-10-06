@@ -1,47 +1,57 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const healthSchema = new mongoose.Schema(
+const Health = sequelize.define(
+  "Health",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
     },
 
     date: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATEONLY,
+      allowNull: false,
     },
 
     sleepHours: {
-      type: Number,
-      min: 0,
-      max: 24,
+      type: DataTypes.DECIMAL(4, 2),
+      field: "sleep_hours",
     },
 
     waterIntake: {
-      type: Number,
-      min: 0,
+      type: DataTypes.DECIMAL(5, 2),
+      field: "water_intake",
     },
 
     exerciseMinutes: {
-      type: Number,
-      min: 0,
+      type: DataTypes.INTEGER,
+      field: "exercise_minutes",
     },
 
     wellness: {
-      type: Number,
-      min: 1,
-      max: 10,
+      type: DataTypes.INTEGER,
     },
   },
   {
+    tableName: "health",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["user_id", "date"],
+      },
+    ],
   }
 );
-
-healthSchema.index({ userId: 1, date: 1 });
-
-const Health = mongoose.model("Health", healthSchema);
 
 export default Health;

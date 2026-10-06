@@ -6,41 +6,63 @@ import Goal from "../models/Goal.js";
 
 export const getDashboard = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
 
-    const [
-      health,
-      study,
-      habits,
-      goals,
-    ] = await Promise.all([
-      Health.find({ userId }).sort({ date: -1 }).limit(7),
+    const [health, study, habits, goals] = await Promise.all([
+      Health.findAll({
+        where: { userId },
+        order: [["date", "DESC"]],
+        limit: 7,
+      }),
 
-      Study.find({ userId }).sort({ date: -1 }).limit(7),
+      Study.findAll({
+        where: { userId },
+        order: [["date", "DESC"]],
+        limit: 7,
+      }),
 
-      Habit.find({ userId, active: true }),
+      Habit.findAll({
+        where: {
+          userId,
+          active: true,
+        },
+      }),
 
-      Goal.find({ userId }).sort({ targetDate: 1 }),
+      Goal.findAll({
+        where: { userId },
+        order: [["targetDate", "ASC"]],
+      }),
     ]);
 
-    const habitIds = habits.map((habit) => habit._id);
+    // Get active habit IDs
+    const habitIds = habits.map((habit) => habit.id);
 
-    const habitLogs = await HabitLog.find({
-      userId,
-      habitId: { $in: habitIds },
-    })
-      .sort({ date: -1 })
-      .limit(30);
+    let habitLogs = [];
 
+    // Only query logs if user has active habits
+    if (habitIds.length > 0) {
+      habitLogs = await HabitLog.findAll({
+        where: {
+          userId,
+          habitId: habitIds,
+        },
+        order: [["date", "DESC"]],
+        limit: 30,
+      });
+    }
+
+    // Calculate total study hours
     const totalStudyHours = study.reduce(
-      (total, item) => total + item.studyHours,
+      (total, item) => total + Number(item.studyHours || 0),
       0
     );
 
+    // Count completed goals
     const completedGoals = goals.filter(
       (goal) => goal.status === "completed"
     ).length;
 
+    // Count completed habit logs
     const completedHabitLogs = habitLogs.filter(
       (log) => log.completed
     ).length;

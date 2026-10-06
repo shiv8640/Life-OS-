@@ -1,41 +1,50 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const habitSchema = new mongoose.Schema(
+const Habit = sequelize.define(
+  "Habit",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
     },
 
     name: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING(100),
+      allowNull: false,
     },
 
     frequency: {
-      type: String,
-      enum: ["daily", "weekly"],
-      default: "daily",
+      type: DataTypes.ENUM("daily", "weekly"),
+      defaultValue: "daily",
     },
 
     target: {
-      type: Number,
-      default: 1,
-      min: 1,
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+      validate: {
+        min: 1,
+      },
     },
 
     active: {
-      type: Boolean,
-      default: true,
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
   },
   {
+    tableName: "habits",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false,
   }
 );
-
-const Habit = mongoose.model("Habit", habitSchema);
 
 export default Habit;

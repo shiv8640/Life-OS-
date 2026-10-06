@@ -1,53 +1,59 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const aiInsightSchema = new mongoose.Schema(
+const AIInsight = sequelize.define(
+  "AIInsight",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
     },
 
     type: {
-      type: String,
-      enum: [
+      type: DataTypes.ENUM(
         "health",
         "study",
         "habit",
         "goal",
         "productivity",
-        "general",
-      ],
-      default: "general",
+        "general"
+      ),
+      defaultValue: "general",
     },
 
     title: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING(200),
+      allowNull: false,
     },
 
     insight: {
-      type: String,
-      required: true,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
 
     recommendation: {
-      type: String,
-      required: true,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
 
     evidence: {
-      type: Array,
-      default: [],
-    },
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
+      type: DataTypes.JSON,
+      defaultValue: [],
     },
   },
+  {
+    tableName: "ai_insights",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false,
+  }
 );
-
-const AIInsight = mongoose.model("AIInsight", aiInsightSchema);
 
 export default AIInsight;

@@ -13,7 +13,10 @@ export const signup = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    // Check if user already exists
+    const existingUser = await User.findOne({
+      where: { email },
+    });
 
     if (existingUser) {
       return res.status(409).json({
@@ -22,22 +25,25 @@ export const signup = async (req, res) => {
       });
     }
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create user
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
     });
 
-    const token = generateToken(user._id);
+    // Generate JWT using MySQL ID
+    const token = generateToken(user.id);
 
     res.status(201).json({
       success: true,
       message: "Signup successful",
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
       },
@@ -55,7 +61,10 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    // Find user by email
+    const user = await User.findOne({
+      where: { email },
+    });
 
     if (!user) {
       return res.status(401).json({
@@ -64,6 +73,7 @@ export const login = async (req, res) => {
       });
     }
 
+    // Compare password
     const isPasswordCorrect = await bcrypt.compare(
       password,
       user.password
@@ -76,14 +86,15 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id);
+    // Generate JWT
+    const token = generateToken(user.id);
 
     res.json({
       success: true,
       message: "Login successful",
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
       },

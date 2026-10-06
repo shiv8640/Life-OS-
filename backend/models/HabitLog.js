@@ -1,39 +1,49 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { sequelize } from "../config/db.js";
 
-const habitLogSchema = new mongoose.Schema(
+const HabitLog = sequelize.define(
+  "HabitLog",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+
     habitId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Habit",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "habit_id",
     },
 
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: "user_id",
     },
 
     date: {
-      type: Date,
-      required: true,
+      type: DataTypes.DATEONLY,
+      allowNull: false,
     },
 
     completed: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {
+    tableName: "habit_logs",
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["habit_id", "date"],
+      },
+    ],
   }
 );
-
-habitLogSchema.index(
-  { habitId: 1, date: 1 },
-  { unique: true }
-);
-
-const HabitLog = mongoose.model("HabitLog", habitLogSchema);
 
 export default HabitLog;
